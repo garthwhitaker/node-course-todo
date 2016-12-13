@@ -18,16 +18,17 @@ app.post('/todos', (req, res) => {
         text: req.body.text
     })
     todo.save().then(
-        (doc) => { 
+        (doc) => {
             res.send(doc);
         },
-        (error) => { 
+        (error) => {
             res.status(400);
             res.send(error);
-            
+
         }
     );
-    
+
 });
+module.exports = { app };
 
 //
