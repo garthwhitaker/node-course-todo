@@ -29,6 +29,22 @@ app.post('/todos', (req, res) => {
     );
 
 });
+
+//GET
+app.get('/todos', (req, res) => {
+  
+    Todo.find().then(
+        (todos) => {
+            res.send({todos});
+        },
+        (error) => {
+            res.status(400);
+            res.send(error);
+
+        }
+    );
+
+});
 module.exports = { app };
 
 //
