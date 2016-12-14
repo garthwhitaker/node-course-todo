@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 var mongoose = require('./db/mongoose');
 var {User} = require('./models/User');
 var {Todo} = require('./models/Todo');
+var {ObjectID} = require('mongodb');
 
 var app = express();
 app.use(bodyParser.json());
@@ -30,12 +31,12 @@ app.post('/todos', (req, res) => {
 
 });
 
-//GET
+//GET /todos
 app.get('/todos', (req, res) => {
-  
+
     Todo.find().then(
         (todos) => {
-            res.send({todos});
+            res.send({ todos });
         },
         (error) => {
             res.status(400);
@@ -45,6 +46,31 @@ app.get('/todos', (req, res) => {
     );
 
 });
-module.exports = { app };
 
-//
+//GET /todos/12312
+app.get('/todo/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    Todo.findById({_id: id})
+    .then(
+        (todo) => {
+            if (!todo) {
+                return res.status(404).send();
+            }
+            res.send({todo});
+
+    }).catch((error) => {
+            res.status(400);
+            res.send();
+    });
+
+});
+
+
+
+module.exports = { app };
