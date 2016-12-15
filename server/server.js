@@ -1,16 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const port = process.env.PORT || 3000;
 
 var mongoose = require('./db/mongoose');
 var {User} = require('./models/User');
 var {Todo} = require('./models/Todo');
 var {ObjectID} = require('mongodb');
 
+
 var app = express();
 app.use(bodyParser.json());
 
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
 });
 
 //POST
@@ -56,18 +58,43 @@ app.get('/todos/:id', (req, res) => {
         return res.status(404).send();
     }
 
-    Todo.findById({_id: id})
-    .then(
+    Todo.findById({ _id: id })
+        .then(
         (todo) => {
             if (!todo) {
                 return res.status(404).send();
             }
-            res.send({todo});
+            res.send({ todo });
 
-    }).catch((error) => {
+        }).catch((error) => {
             res.status(400);
             res.send();
-    });
+        });
+
+});
+
+
+//DELETE /todos/12312
+app.delete('/todos/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    Todo.findByIdAndRemove(id)
+        .then(
+        (todo) => {
+            if (!todo) {
+                return res.status(404).send();
+            }
+            res.send({ todo });
+
+        }).catch((error) => {
+            res.status(400);
+            res.send();
+        });
 
 });
 
