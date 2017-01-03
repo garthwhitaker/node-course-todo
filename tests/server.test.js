@@ -6,7 +6,7 @@ const {app} = require('./../server/server');
 const {Todo} = require('./../server/models/Todo');
 const todos = [
     { text: 'First test todo', _id: new ObjectID() },
-    { text: 'Second test todo', __id: new ObjectID()}
+    { text: 'Second test todo', __id: new ObjectID() }
 ]
 describe('POST /todos', () => {
 
@@ -94,14 +94,14 @@ describe('GET /todos/:id', () => {
             .end(done);
     });
 
-        it('should return 404 if todo not found', (done) => {
+    it('should return 404 if todo not found', (done) => {
 
         request(app)
             .get(`/todos/${new ObjectID().toHexString()}`)
             .expect(404)
             .end(done);
     });
-      it('should return 404 if non object ids', (done) => {
+    it('should return 404 if non object ids', (done) => {
 
         request(app)
             .get(`/todos/123`)
@@ -109,4 +109,48 @@ describe('GET /todos/:id', () => {
             .end(done);
     });
 })
+
+describe('DELETE /todos/:id', () => {
+
+    var hexId = todos[0]._id.toHexString();
+
+    it('should remove todo with id', (done) => {
+
+        request(app)
+            .delete(`/todos/${hexId}`)
+            .expect(200)
+            .expect((response) => {
+                expect(response.body.todo._id).toBe(hexId);
+            })
+            .end((err, resp) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                Todo.findById(hexId)
+                    .then((todo) => {
+                        expect(todo).toNotExist();
+                        done();
+                    })
+                    .catch((err) =>  done(err));
+            });
+    });
+
+    it('should return 404 if invalid id', (done) => {
+        request(app)
+            .delete(`/todos/${new ObjectID().toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        request(app)
+            .delete('/todos/123')
+            .expect(404)
+            .end(done);
+
+    });
+
+});
 
