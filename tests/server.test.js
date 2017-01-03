@@ -6,11 +6,10 @@ const {app} = require('./../server/server');
 const {Todo} = require('./../server/models/Todo');
 const todos = [
     { text: 'First test todo', _id: new ObjectID() },
-    { text: 'Second test todo', __id: new ObjectID() }
-]
-describe('POST /todos', () => {
+    { text: 'Second test todo', _id: new ObjectID(), completed: true, completedAt: 333 }
+];
 
-    beforeEach((done) => {
+beforeEach((done) => {
         Todo.remove({})
             .then(() => {
                 Todo.insertMany(todos);
@@ -18,6 +17,8 @@ describe('POST /todos', () => {
             })
             .then(() => done());
     });
+
+describe('POST /todos', () => {
 
     it('should insert todos', (done) => {
         var text = 'Todo Item 1';
@@ -112,7 +113,7 @@ describe('GET /todos/:id', () => {
 
 describe('DELETE /todos/:id', () => {
 
-    var hexId = todos[0]._id.toHexString();
+    var hexId = todos[1]._id.toHexString();
 
     it('should remove todo with id', (done) => {
 
@@ -133,7 +134,7 @@ describe('DELETE /todos/:id', () => {
                         expect(todo).toNotExist();
                         done();
                     })
-                    .catch((err) =>  done(err));
+                    .catch((err) => done(err));
             });
     });
 
@@ -154,3 +155,61 @@ describe('DELETE /todos/:id', () => {
 
 });
 
+describe('PATCH /todos/:id', () => {
+
+    it('should update todo', (done) => {
+
+        var hexId = todos[0]._id.toHexString();
+        var update = { text: 'Updated', completed: true };
+
+        request(app)
+            .patch(`/todos/${hexId}`)
+            .send(update)
+            .expect(200)
+            .expect((response) => {
+                expect(response.body.todo.text).toBe(update.text);
+                expect(response.body.todo.completed).toBe(update.completed);
+                expect(response.body.todo.completedAt).toBeA('number');
+
+            })
+            .end(done);
+
+
+
+    });
+
+
+
+    it('should update todo with completed false', (done) => {
+        var hexId = todos[1]._id.toHexString();
+        var update = { text: 'Updated the other', completed: false };
+
+        request(app)
+            .patch(`/todos/${hexId}`)
+            .send(update)
+            .expect((response) => {
+                expect(response.body.todo.text).toBe(update.text);
+                expect(response.body.todo.completed).toBe(update.completed);
+                expect(response.body.todo.completedAt).toNotExist();
+            })
+            .end(done);
+
+    });
+
+
+    it('should return 404 if invalid id', (done) => {
+        request(app)
+            .patch(`/todos/${new ObjectID().toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        request(app)
+            .patch('/todos/123')
+            .expect(404)
+            .end(done);
+
+    });
+
+});
