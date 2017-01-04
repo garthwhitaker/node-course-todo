@@ -169,13 +169,22 @@ app.post('/users/login', (req, res) => {
                 .then((token) => {
                     res.header('x-auth', token).send(user);
                 })
-        
+
         })
         .catch((err) => {
             res.status(400);
             res.send();
         });
 
+});
+
+//DELETE /users/me/token
+app.delete('/users/me/token', authenticate, (req, res) => {
+
+    req.user.removeToken(req.token)
+        .then(
+        () => { res.status(200).send() },
+        () => { res.status(400).send()})
 });
 
 
