@@ -9,14 +9,13 @@ var mongoose = require('./db/mongoose');
 var {User} = require('./models/User');
 var {Todo} = require('./models/Todo');
 var {ObjectID} = require('mongodb');
+var {authenticate} = require('./middleware/authenticate')
 
 
 var app = express();
 app.use(bodyParser.json());
 
-app.listen(port, () => {
-    console.log(`Server started on port ${port}`);
-});
+
 
 //POST
 app.post('/todos', (req, res) => {
@@ -147,15 +146,23 @@ app.post('/users', (req, res) => {
             return user.generateAuthToken();
         })
         .then((token) => {
-            res.header('x-auth',token).send(user);
+            res.header('x-auth', token).send(user);
         })
         .catch((err) => {
             res.status(400);
             res.send(err);
         });
-})
+});
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
+});
 
 
 
+app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+});
 
 module.exports = { app };
