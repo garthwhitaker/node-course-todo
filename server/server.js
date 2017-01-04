@@ -129,11 +129,31 @@ app.patch('/todos/:id', (req, res) => {
 
         })
         .catch((error) => {
-            res.status(404);
-            res.send();
+            res.status(400);
+            res.send(error);
         })
 
 });
+
+// POST /users
+app.post('/users', (req, res) => {
+
+    var body = _.pick(req.body, ['email', 'password']);
+
+    var user = new User(body);
+
+    user.save()
+        .then(() => {
+            return user.generateAuthToken();
+        })
+        .then((token) => {
+            res.header('x-auth',token).send(user);
+        })
+        .catch((err) => {
+            res.status(400);
+            res.send(err);
+        });
+})
 
 
 

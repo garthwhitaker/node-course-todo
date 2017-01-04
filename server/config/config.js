@@ -9,5 +9,5 @@ else if (env === 'test') {
     process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
 }
 else {
-    process.env.MONGODB_URI = 'mongodb://garth:password@ds133438.mlab.com:33438/todoapplication'
+    process.env.MONGODB_URI = 'mongodb://garth:password@ds133438.mlab.com:33438/todoapplication';
 }
