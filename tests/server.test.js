@@ -3,9 +3,9 @@ const expect = require('expect');
 const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server/server');
-const {Todo} = require('./../server/models/Todo');
+const {Todo} = require('./../server/models/todo');
 const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
-const {User} = require('./../server/models/User');
+const {User} = require('./../server/models/user');
 
 
 beforeEach(populateTodos);

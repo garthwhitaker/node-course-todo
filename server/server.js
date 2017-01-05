@@ -4,11 +4,11 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const port = process.env.PORT;
+const {ObjectID} = require('mongodb');
 
 var mongoose = require('./db/mongoose');
-var {User} = require('./models/User');
-var {Todo} = require('./models/Todo');
-var {ObjectID} = require('mongodb');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user')
 var {authenticate} = require('./middleware/authenticate')
 
 
